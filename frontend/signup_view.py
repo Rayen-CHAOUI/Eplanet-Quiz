@@ -18,7 +18,9 @@ def signup_view(page: ft.Page):
     def go_login(_):
         page.go("/")
 
-    page.bgcolor = ft.Colors.BLUE_GREY_900
+    # Light theme setup
+    page.bgcolor = ft.Colors.WHITE
+    page.theme_mode = ft.ThemeMode.LIGHT
 
     page.views.clear()
     page.views.append(
@@ -28,30 +30,30 @@ def signup_view(page: ft.Page):
                 ft.Container(
                     content=ft.Column(
                         [
-                            ft.Text("Eplanet Quiz", size=40, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
-                            ft.Text("Create your account", size=18, color=ft.Colors.GREY_300),
+                            ft.Text("Eplanet Quiz", size=40, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
+                            ft.Text("Create your account", size=18, color=ft.Colors.GREY_800),
                             full_name := ft.TextField(
                                 label="Full Name",
-                                label_style=ft.TextStyle(color=ft.Colors.GREY_300),
-                                text_style=ft.TextStyle(color=ft.Colors.WHITE),
-                                border_color=ft.Colors.GREY_500,
-                                focused_border_color=ft.Colors.BLUE_300,
-                                bgcolor=ft.Colors.BLUE_GREY_800
+                                label_style=ft.TextStyle(color=ft.Colors.GREY_700),
+                                text_style=ft.TextStyle(color=ft.Colors.BLACK),
+                                border_color=ft.Colors.GREY_400,
+                                focused_border_color=ft.Colors.BLUE_400,
+                                bgcolor=ft.Colors.GREY_100
                             ),
                             password := ft.TextField(
                                 label="Password",
-                                label_style=ft.TextStyle(color=ft.Colors.GREY_300),
-                                text_style=ft.TextStyle(color=ft.Colors.WHITE),
-                                border_color=ft.Colors.GREY_500,
-                                focused_border_color=ft.Colors.BLUE_300,
+                                label_style=ft.TextStyle(color=ft.Colors.GREY_700),
+                                text_style=ft.TextStyle(color=ft.Colors.BLACK),
+                                border_color=ft.Colors.GREY_400,
+                                focused_border_color=ft.Colors.BLUE_400,
                                 password=True,
                                 can_reveal_password=True,
-                                bgcolor=ft.Colors.BLUE_GREY_800
+                                bgcolor=ft.Colors.GREY_100
                             ),
                             level := ft.Dropdown(
                                 label="Level",
-                                label_style=ft.TextStyle(color=ft.Colors.GREY_300),
-                                text_style=ft.TextStyle(color=ft.Colors.WHITE),
+                                label_style=ft.TextStyle(color=ft.Colors.GREY_700),
+                                text_style=ft.TextStyle(color=ft.Colors.BLACK),
                                 options=[
                                     ft.dropdown.Option("Beginner"),
                                     ft.dropdown.Option("Pre-intermediate"),
@@ -59,9 +61,9 @@ def signup_view(page: ft.Page):
                                     ft.dropdown.Option("Upper-intermediate"),
                                     ft.dropdown.Option("Advanced"),
                                 ],
-                                border_color=ft.Colors.GREY_500,
-                                focused_border_color=ft.Colors.BLUE_300,
-                                bgcolor=ft.Colors.BLUE_GREY_800
+                                border_color=ft.Colors.GREY_400,
+                                focused_border_color=ft.Colors.BLUE_400,
+                                bgcolor=ft.Colors.GREY_100
                             ),
                             error_text,
                             ft.ElevatedButton("Register", on_click=do_signup, width=200),

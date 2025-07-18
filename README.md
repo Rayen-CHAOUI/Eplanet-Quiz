@@ -1,14 +1,15 @@
 # Eplanet Quiz
 
-**Eplanet Quiz** is an English language quiz platform built with [Flet](https://flet.dev/) and `SQLite3`. Where users can register, log in, and take quizzes with multimedia questions **(text, image, and audio)**. Admins can manage users and questions via a Dashboard.
+**Eplanet Quiz** is an English language quiz platform built with [Flet](https://flet.dev/) and `SQLite3`. Where users can register, log in, and take quizzes with multimedia questions **(text, image, and audio)**. Admins can manage users and questions via a Dashboard, Users also have access to various learning course pages such as **Grammar**, **Vocabulary**, **Speaking**, **Listening**, and **Exercises**.
 
 --- 
 
 ## Screenshots
 
 - Login and signup pages.
-- User dashboard with quiz start button.
+- User dashboard with quiz and learning buttons.
 - Interactive quiz screen with question navigation.
+- Grammar, Vocabulary, Speaking, Listening, and Exercise course pages.
 - Final result page showing detailed performance.
 - Admin dashboard to manage users and import questions.
 
@@ -17,14 +18,20 @@
 ## Features
 
 ### User Features
-- Users stored in `backend/eplanet_users.db`.
-- User registration and login with **ID** and **password**.
-- Multiple levels **(Elemantry, Pre-intermediate, Intermediate, Upper-intermediate, Advanced)**.
-- Real-time quiz interaction **(with audio and image support)**.
-- Ability to **select/change** answers before submitting.
-- Final result page with:
-  - Total score.
-  - Detailed table showing **correct** and **incorrect** answers.
+Users stored in `backend/eplanet_users.db`.
+User registration and login with **ID** and **password**.
+Multiple levels **(Elementary, Pre-intermediate, Intermediate, Upper-intermediate, Advanced)**.
+- Access to course pages:
+    - Grammar.
+    - Vocabulary.
+    - Speaking.
+    - Listening.
+    - Exercises.
+- Real-time quiz interaction (with **audio** and **image support**).
+- Ability to **select/change** answers before clicking "Next".
+- **Final result page** with:
+    - Total score.
+    - Detailed table showing correct and incorrect answers.
 
 ### Admin Features
 - Admin login via session.
@@ -38,6 +45,13 @@
 - Questions stored in `backend/quiz_questions.db`.
 - Assets stored in `assets/images/` and `assets/audio/`.
 - Correct/wrong answers saved per user in `eplanet_users.db`.
+
+---
+
+### Lessons Logic
+- Lessons stored in `backend/lessons/grammar.db`,  `backend/lessons/vocabulary.db`.. etc
+- Assets stored in `assets/images/` and `assets/audio/`.
+- Correct/wrong answers for the exercises displayed in real-time.
 
 ---
 
@@ -80,7 +94,7 @@
 ##  Upcoming Improvements
 
 - Timer per question.
-- Question categories (Grammar, Listening, etc.).
+- Question categories (Grammar, Listening, etc.). ---> **DONE**
 - User statistics and progress tracking.
 - Export results to PDF.
 

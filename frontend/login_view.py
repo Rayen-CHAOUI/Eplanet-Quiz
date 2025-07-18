@@ -18,7 +18,9 @@ def login_view(page: ft.Page):
     def go_signup(_):
         page.go("/signup")
 
-    page.bgcolor = ft.Colors.BLUE_GREY_900
+    # Force light theme
+    page.bgcolor = ft.Colors.WHITE
+    page.theme_mode = ft.ThemeMode.LIGHT
 
     page.views.clear()
     page.views.append(
@@ -28,41 +30,70 @@ def login_view(page: ft.Page):
                 ft.Container(
                     content=ft.Column(
                         [
-                            ft.Text("Eplanet Quiz", size=40, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
-                            ft.Text("Login to your account", size=18, color=ft.Colors.GREY_300),
+                            ft.Image(
+                                src="assets/images/eplanet_logo.png",
+                                width=180,
+                                height=180
+                            ),
+                            ft.Text(
+                                "Eplanet Quiz",
+                                size=36,
+                                weight=ft.FontWeight.BOLD,
+                                color=ft.Colors.BLUE_900
+                            ),
+                            ft.Text(
+                                "Login to your account",
+                                size=18,
+                                color=ft.Colors.GREY_800
+                            ),
                             user_id := ft.TextField(
                                 label="Your 5‑digit ID",
-                                label_style=ft.TextStyle(color=ft.Colors.GREY_300),
-                                text_style=ft.TextStyle(color=ft.Colors.WHITE),
-                                border_color=ft.Colors.GREY_500,
-                                focused_border_color=ft.Colors.BLUE_300,
-                                autofocus=True,
-                                bgcolor=ft.Colors.BLUE_GREY_800
+                                border_radius=12,
+                                filled=True,
+                                bgcolor=ft.Colors.GREY_100,
+                                border_color=ft.Colors.BLUE_300,
+                                focused_border_color=ft.Colors.BLUE_700
                             ),
                             password := ft.TextField(
                                 label="Password",
-                                label_style=ft.TextStyle(color=ft.Colors.GREY_300),
-                                text_style=ft.TextStyle(color=ft.Colors.WHITE),
-                                border_color=ft.Colors.GREY_500,
-                                focused_border_color=ft.Colors.BLUE_300,
+                                border_radius=12,
+                                filled=True,
+                                bgcolor=ft.Colors.GREY_100,
+                                border_color=ft.Colors.BLUE_300,
+                                focused_border_color=ft.Colors.BLUE_700,
                                 password=True,
-                                can_reveal_password=True,
-                                bgcolor=ft.Colors.BLUE_GREY_800
+                                can_reveal_password=True
                             ),
                             error_text,
-                            ft.ElevatedButton("Login", on_click=do_login, width=200),
-                            ft.TextButton("Don't have an account?  Sign up", on_click=go_signup),
+                            ft.ElevatedButton(
+                                "Login",
+                                on_click=do_login,
+                                width=200,
+                                style=ft.ButtonStyle(
+                                    bgcolor=ft.Colors.BLUE_700,
+                                    color=ft.Colors.WHITE,
+                                    shape=ft.RoundedRectangleBorder(radius=14)
+                                )
+                            ),
+                            ft.TextButton(
+                                "Don't have an account? Sign up",
+                                on_click=go_signup,
+                                style=ft.ButtonStyle(
+                                    color=ft.Colors.BLUE_700
+                                )
+                            ),
                         ],
                         spacing=20,
                         alignment=ft.MainAxisAlignment.CENTER,
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        width=400,
+                        width=400
                     ),
                     alignment=ft.alignment.center,
                     expand=True,
-                    padding=20
+                    padding=40
                 )
-            ]
+            ],
+            scroll=ft.ScrollMode.AUTO
         )
     )
     page.update()

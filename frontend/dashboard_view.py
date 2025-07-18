@@ -20,7 +20,6 @@ def dashboard_view(page: ft.Page):
             print("Failed to load users:", e)
             return []
 
-    # Confirm dialog close helpers
     def close_dialog(_=None):
         page.dialog.open = False
         page.update()
@@ -66,15 +65,27 @@ def dashboard_view(page: ft.Page):
         start_quiz_dialog.open = True
         page.update()
 
-    def add_question(_):
-        page.go("/add_question")
+    def go_to(route):
+        def handler(_):
+            page.go(route)
+        return handler
 
-    # Top Nav Bar
     top_nav = ft.Container(
         content=ft.Row(
             controls=[
                 ft.Text("Eplanet Quiz Dashboard", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE),
-                ft.IconButton(icon=ft.Icons.LOGOUT, tooltip="Logout", on_click=show_logout_dialog, icon_color=ft.Colors.WHITE)
+                ft.Row(
+                    controls=[
+                        ft.TextButton("Add Question", on_click=go_to("/add_question"), style=ft.ButtonStyle(color=ft.Colors.WHITE)),
+                        ft.TextButton("Add Grammar", on_click=go_to("/add_grammar_lesson"), style=ft.ButtonStyle(color=ft.Colors.WHITE)),
+                        ft.TextButton("Add Vocabulary", on_click=go_to("/add_vocabulary_lesson"), style=ft.ButtonStyle(color=ft.Colors.WHITE)),
+                        ft.TextButton("Add Speaking", on_click=go_to("/add_speaking_lesson"), style=ft.ButtonStyle(color=ft.Colors.WHITE)),
+                        ft.TextButton("Add Listening", on_click=go_to("/add_listening_lesson"), style=ft.ButtonStyle(color=ft.Colors.WHITE)),
+                        ft.TextButton("Add Exercises", on_click=go_to("/add_exercice"), style=ft.ButtonStyle(color=ft.Colors.WHITE)),
+                        ft.IconButton(icon=ft.Icons.LOGOUT, tooltip="Logout", on_click=show_logout_dialog, icon_color=ft.Colors.WHITE),
+                    ],
+                    spacing=10
+                )
             ],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         ),
@@ -82,13 +93,13 @@ def dashboard_view(page: ft.Page):
         bgcolor=ft.Colors.BLUE_800,
     )
 
+
     banner = ft.Container(
         content=ft.Row(
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
                 ft.Image(src="assets/images/eplanet_logo.png", width=300, height=300),
-                
                 ft.Column(
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
@@ -109,11 +120,7 @@ def dashboard_view(page: ft.Page):
                             padding=12,
                             bgcolor=ft.Colors.BLUE_GREY_100,
                             border_radius=12,
-                            shadow=ft.BoxShadow(
-                                blur_radius=8,
-                                color=ft.Colors.BLACK12,
-                                offset=ft.Offset(0, 3),
-                            )
+                            shadow=ft.BoxShadow(blur_radius=8, color=ft.Colors.BLACK12, offset=ft.Offset(0, 3)),
                         )
                     ],
                     spacing=12
@@ -124,84 +131,36 @@ def dashboard_view(page: ft.Page):
         padding=ft.padding.symmetric(vertical=20, horizontal=30),
         bgcolor=ft.Colors.TRANSPARENT,
         border_radius=20,
-        shadow=ft.BoxShadow(
-            blur_radius=10,
-            spread_radius=1,
-            offset=ft.Offset(0, 3),
-            color=ft.Colors.BLACK12
+        shadow=ft.BoxShadow(blur_radius=10, spread_radius=1, offset=ft.Offset(0, 3), color=ft.Colors.BLACK12)
+    )
+
+    # Wide full-width button style
+    def wide_button(label, color, route):
+        return ft.FilledButton(
+            text=label,
+            on_click=go_to(route),
+            height=60,
+            width=600,
+            style=ft.ButtonStyle(
+                bgcolor=color,
+                color=ft.Colors.WHITE,
+                shape=ft.RoundedRectangleBorder(radius=14),
+            )
         )
-    )
 
-    # Buttons
-    start_quiz_btn = ft.FilledButton(
-        "Start Quiz",
-        width=200,
-        on_click=show_start_dialog,
-        style=ft.ButtonStyle(
-            bgcolor=ft.Colors.GREEN_500,
-            color=ft.Colors.WHITE,
-            shape=ft.RoundedRectangleBorder(radius=12),
-        )
-    )
-
-    add_question_btn = ft.FilledButton(
-        "Add Question",
-        width=200,
-        on_click=add_question,
-        style=ft.ButtonStyle(
-            bgcolor=ft.Colors.INDIGO_400,
-            color=ft.Colors.WHITE,
-            shape=ft.RoundedRectangleBorder(radius=12),
-        )
-    )
-
-    # Users table
-    users = load_all_users()
-
-    user_list_title = ft.Text(
-        "All Students",
-        size=22,
-        weight=ft.FontWeight.BOLD,
-        color=ft.Colors.INDIGO_900
-    )
-
-    user_table = ft.Column(
+    # Vertical buttons list
+    button_list = ft.Column(
         controls=[
-            ft.Row([
-                ft.Text("Id",    weight=ft.FontWeight.BOLD, width=150, color=ft.Colors.BLACK87),
-                ft.Text("Name",  weight=ft.FontWeight.BOLD, width=250, color=ft.Colors.BLACK87),
-                ft.Text("Level", weight=ft.FontWeight.BOLD, width=250, color=ft.Colors.BLACK87),
-                ft.Text("Right", weight=ft.FontWeight.BOLD, width=150, color=ft.Colors.GREEN_800),
-                ft.Text("Wrong", weight=ft.FontWeight.BOLD, width=150, color=ft.Colors.RED_800),
-                ft.Text("Joined", weight=ft.FontWeight.BOLD, width=250, color=ft.Colors.BLACK87),
-            ])
-        ] + [
-            ft.Row([
-                ft.Text(u[0], width=150, color=ft.Colors.BLACK),
-                ft.Text(u[1], width=250, color=ft.Colors.BLACK),
-                ft.Text(u[2], width=250, color=ft.Colors.BLUE_800),
-                ft.Text(str(u[3]), width=150, color=ft.Colors.GREEN_700),
-                ft.Text(str(u[4]), width=150, color=ft.Colors.RED_700),
-                ft.Text(u[5], width=250, color=ft.Colors.BLACK),
-            ], spacing=10)
-            for u in users if u[0] != user['full_name']
+            wide_button("Start the Quiz", ft.Colors.GREEN_600, "/quiz"),
+            wide_button("Grammar Courses", ft.Colors.BLUE_600, "/grammar"),
+            wide_button("Vocabulary Courses", ft.Colors.DEEP_ORANGE_400, "/vocabulary"),
+            wide_button("Speaking", ft.Colors.PURPLE_500, "/speaking"),
+            wide_button("Listening", ft.Colors.CYAN_600, "/listening"),
+            wide_button("Exercises", ft.Colors.INDIGO_400, "/exercises"),
+            wide_button("Students Ranking", ft.Colors.TEAL_500, "/users"),
         ],
-        spacing=8
-    )
-
-    user_card = ft.Container(
-        content=ft.Column([user_list_title, user_table], spacing=15),
-        padding=20,
-        bgcolor=ft.Colors.WHITE,
-        border_radius=16,
-        shadow=ft.BoxShadow(blur_radius=8, color=ft.Colors.BLACK12, offset=ft.Offset(0, 3))
-    )
-
-    footer_text = ft.Text(
-        "developed by CHAOUI RAYEN",
-        size=15,
-        italic=True,
-        color=ft.Colors.BLUE_600
+        spacing=20,
+        horizontal_alignment=ft.CrossAxisAlignment.CENTER
     )
 
     page.views.clear()
@@ -212,23 +171,15 @@ def dashboard_view(page: ft.Page):
                 top_nav,
                 ft.Container(
                     content=ft.Column(
-                        [
+                        controls=[
                             banner,
-                            ft.Row([start_quiz_btn, add_question_btn], spacing=20),
-                            ft.Divider(height=30),
-                            user_card,
+                            button_list,
                         ],
                         spacing=30,
-                        alignment=ft.MainAxisAlignment.START,
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER
                     ),
                     padding=30,
                     expand=True,
-                ),
-                ft.Container(
-                    content=footer_text,
-                    alignment=ft.alignment.bottom_right,
-                    padding=10
                 ),
                 logout_dialog,
                 start_quiz_dialog

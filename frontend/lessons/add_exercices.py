@@ -4,8 +4,8 @@ import os
 import shutil
 
 
-def add_question_view(page: ft.Page):
-    db_path = "backend/quiz_questions.db"
+def add_exercice_view(page: ft.Page):
+    db_path = "backend/courses/exercises.db"
     os.makedirs("assets/images", exist_ok=True)
     os.makedirs("assets/audio", exist_ok=True)
 
@@ -37,7 +37,7 @@ def add_question_view(page: ft.Page):
         img_picker.pick_files(allow_multiple=False, allowed_extensions=["png", "jpg", "jpeg"])
 
     def pick_audio(_):
-        audio_picker.pick_files(allow_multiple=False, allowed_extensions=["mp3", "wav", "ogg"])
+        audio_picker.pick_files(allow_multiple=False, allowed_extensions=["mp3", "wav"])
 
     def on_image_result(e: ft.FilePickerResultEvent):
         if e.files:
@@ -77,7 +77,7 @@ def add_question_view(page: ft.Page):
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
             cursor.execute("""
-            CREATE TABLE IF NOT EXISTS questions (
+            CREATE TABLE IF NOT EXISTS exercises (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 question_text TEXT NOT NULL,
                 image_path TEXT,
@@ -90,7 +90,7 @@ def add_question_view(page: ft.Page):
             )
             """)
             cursor.execute("""
-            INSERT INTO questions (
+            INSERT INTO exercises (
                 question_text, image_path, audio_path,
                 choice_a, choice_b, choice_c, choice_d, correct_choice
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
@@ -178,7 +178,7 @@ def add_question_view(page: ft.Page):
     page.views.clear()
     page.views.append(
         ft.View(
-            route="/add-question",
+            route="/add_exercice",
             controls=[
                 nav_bar,
                 ft.Container(
