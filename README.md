@@ -18,9 +18,9 @@
 ## Features
 
 ### User Features
-Users stored in `backend/eplanet_users.db`.
-User registration and login with **ID** and **password**.
-Multiple levels **(Elementary, Pre-intermediate, Intermediate, Upper-intermediate, Advanced)**.
+- Users stored in `backend/eplanet_users.db`.
+- User registration and login with **ID** and **password**.
+- Multiple levels **(Elementary, Pre-intermediate, Intermediate, Upper-intermediate, Advanced)**.
 - Access to course pages:
     - Grammar.
     - Vocabulary.
