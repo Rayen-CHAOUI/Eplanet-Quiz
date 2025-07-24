@@ -3,8 +3,8 @@ import sqlite3
 import os
 import shutil
 
-def add_vocabulary_lesson_view(page: ft.Page):
-    db_path = "backend/courses/vocabulary.db"
+def add_speaking_lesson_view(page: ft.Page):
+    db_path = "backend/courses/speaking.db"
     os.makedirs("assets/images", exist_ok=True)
 
     # UI Fields
@@ -45,14 +45,14 @@ def add_vocabulary_lesson_view(page: ft.Page):
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
             cursor.execute("""
-                CREATE TABLE IF NOT EXISTS VocabularyLessons (
+                CREATE TABLE IF NOT EXISTS speakingLesson (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     content TEXT NOT NULL,
                     image TEXT
                 )
             """)
             cursor.execute("""
-                INSERT INTO VocabularyLessons (content, image) VALUES (?, ?)
+                INSERT INTO speakingLesson (content, image) VALUES (?, ?)
             """, (
                 lesson_text.value.strip(),
                 image_file.data if hasattr(image_file, "data") else None
@@ -79,11 +79,11 @@ def add_vocabulary_lesson_view(page: ft.Page):
     top_nav = ft.Container(
         content=ft.Row(
             controls=[
-                ft.Text("Add Vocabulary Lesson", size=26, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                ft.Text("Add Speaking Lesson", size=26, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                 ft.ElevatedButton(
                     "Back to Dashboard",
                     icon=ft.Icons.ARROW_BACK,
-                    on_click=lambda _: page.go("/dashboard"),
+                    on_click=lambda _: page.go("/admin_dashboard"),
                     bgcolor=ft.Colors.BLUE_100,
                     color=ft.Colors.BLUE_900
                 )
@@ -116,7 +116,7 @@ def add_vocabulary_lesson_view(page: ft.Page):
     page.views.clear()
     page.views.append(
         ft.View(
-            route="/add_vocabulary_lesson",
+            route="/add_speaking_lesson",
             controls=[
                 top_nav,
                 ft.Container(content=form_card, alignment=ft.alignment.center, expand=True)

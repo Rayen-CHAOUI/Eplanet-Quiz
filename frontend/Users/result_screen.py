@@ -1,5 +1,9 @@
 import flet as ft
 import sqlite3
+import os
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
 
 
 def result_view(page: ft.Page):
@@ -34,45 +38,105 @@ def result_view(page: ft.Page):
     ACCENT = ft.Colors.TEAL_500
     BG = ft.Colors.BLUE_GREY_50
 
-    title = ft.Text(
-        "Your Quiz Results",
-        size=36,
-        weight=ft.FontWeight.BOLD,
-        color=PRIMARY
-    )
+    def generate_pdf(path: str):
+        if not path:
+            return
 
-    user_info = ft.Text(
-        f"{user['full_name']} • Level: {user['level']}",
-        size=25,
-        color=ft.Colors.BLUE_GREY_600
-    )
+        c = canvas.Canvas(path, pagesize=A4)
+        width, height = A4
+
+        # Logo
+        logo_path = "assets/logo.png"
+        if os.path.exists(logo_path):
+            c.drawImage(logo_path, x=40, y=height - 100, width=60, height=60, mask='auto')
+
+        # Title
+        c.setFont("Helvetica-Bold", 22)
+        c.setFillColor(colors.HexColor("#263238"))
+        c.drawString(120, height - 70, "Eplanet Quiz Result Report")
+
+        # User info
+        c.setFont("Helvetica", 14)
+        c.setFillColor(colors.HexColor("#455A64"))
+        c.drawString(40, height - 130, f"Name: {user['full_name']}")
+        c.drawString(40, height - 150, f"Level: {user['level']}")
+
+        # Summary
+        c.setFont("Helvetica-Bold", 16)
+        c.setFillColor(colors.HexColor("#004D40"))
+        c.drawString(40, height - 190, f"Correct: {correct}")
+        c.setFillColor(colors.HexColor("#B71C1C"))
+        c.drawString(150, height - 190, f"Wrong: {wrong}")
+        c.setFillColor(colors.HexColor("#FF6F00"))
+        c.drawString(250, height - 190, f"Skipped: {skipped}")
+
+        # Table header
+        y = height - 230
+        c.setFillColor(colors.HexColor("#263238"))
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(40, y, "No.")
+        c.drawString(80, y, "Question")
+        c.drawString(400, y, "Status")
+
+        # Table rows
+        c.setFont("Helvetica", 11)
+        for idx, a in enumerate(answers):
+            y -= 20
+            if y < 50:
+                c.showPage()
+                y = height - 50
+            status = "Skipped" if a["selected"] is None else ("Correct" if a["selected"] == a["correct"] else "Wrong")
+            color = {"Correct": colors.green, "Wrong": colors.red, "Skipped": colors.orange}[status]
+
+            c.setFillColor(colors.black)
+            c.drawString(40, y, str(idx + 1))
+            c.drawString(80, y, a["question"][:50] + "...")
+            c.setFillColor(color)
+            c.drawString(400, y, status)
+
+        c.save()
+
+        page.dialog = ft.AlertDialog(
+            title=ft.Text("PDF Exported Successfully"),
+            content=ft.Text(f"Saved to: {path}"),
+            actions=[ft.TextButton("OK", on_click=lambda e: close_dialog())],
+        )
+        page.dialog.open = True
+        page.update()
+
+    def close_dialog():
+        page.dialog.open = False
+        page.update()
+
+    # FilePicker for PDF export
+    file_picker = ft.FilePicker(on_result=lambda e: generate_pdf(e.path if e.files else None))
+    page.overlay.append(file_picker)
+
+    # UI Components
+    title = ft.Text("Your Quiz Results", size=36, weight=ft.FontWeight.BOLD, color=PRIMARY)
+
+    user_info = ft.Text(f"{user['full_name']} • Level: {user['level']}", size=25, color=ft.Colors.BLUE_GREY_600)
 
     result_summary = ft.Row(
         controls=[
             ft.Container(
                 content=ft.Text(f"Correct: {correct}", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.GREEN_700),
-                padding=15,
-                bgcolor=ft.Colors.GREEN_50,
-                border_radius=16
+                padding=15, bgcolor=ft.Colors.GREEN_50, border_radius=16
             ),
             ft.Container(
                 content=ft.Text(f"Wrong: {wrong}", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.RED_700),
-                padding=15,
-                bgcolor=ft.Colors.RED_50,
-                border_radius=16
+                padding=15, bgcolor=ft.Colors.RED_50, border_radius=16
             ),
             ft.Container(
                 content=ft.Text(f"Skipped: {skipped}", size=18, weight=ft.FontWeight.BOLD, color=ft.Colors.AMBER_800),
-                padding=15,
-                bgcolor=ft.Colors.AMBER_50,
-                border_radius=16
+                padding=15, bgcolor=ft.Colors.AMBER_50, border_radius=16
             )
         ],
         spacing=20,
         alignment=ft.MainAxisAlignment.CENTER
     )
 
-    # Table headers
+    # Question Table
     table = ft.Column(
         controls=[
             ft.Row([
@@ -84,20 +148,13 @@ def result_view(page: ft.Page):
         spacing=12
     )
 
-    # Table rows
     for idx, a in enumerate(answers):
         if a["selected"] is None:
-            status_text = "Skipped"
-            status_color = ft.Colors.AMBER_800
-            bg_color = ft.Colors.AMBER_50
+            status_text, status_color, bg_color = "Skipped", ft.Colors.AMBER_800, ft.Colors.AMBER_50
         elif a["selected"] == a["correct"]:
-            status_text = "Correct"
-            status_color = ft.Colors.GREEN_700
-            bg_color = ft.Colors.GREEN_50
+            status_text, status_color, bg_color = "Correct", ft.Colors.GREEN_700, ft.Colors.GREEN_50
         else:
-            status_text = "Wrong"
-            status_color = ft.Colors.RED_700
-            bg_color = ft.Colors.RED_50
+            status_text, status_color, bg_color = "Wrong", ft.Colors.RED_700, ft.Colors.RED_50
 
         table.controls.append(
             ft.Container(
@@ -124,6 +181,22 @@ def result_view(page: ft.Page):
         )
     )
 
+    extract_button = ft.FilledButton(
+        "Download as PDF",
+        icon=ft.Icons.PICTURE_AS_PDF,
+        on_click=lambda _: file_picker.save_file(
+            dialog_title="Save Quiz Result as PDF",
+            file_name=f"quiz_result_{user['full_name'].replace(' ', '_')}.pdf",
+            allowed_extensions=["pdf"]
+        ),
+        style=ft.ButtonStyle(
+            shape=ft.RoundedRectangleBorder(radius=10),
+            padding=ft.padding.symmetric(horizontal=25, vertical=15),
+            bgcolor=PRIMARY,
+            color=ft.Colors.WHITE
+        )
+    )
+
     result_card = ft.Container(
         content=ft.Column(
             [
@@ -135,7 +208,7 @@ def result_view(page: ft.Page):
                 ft.Text("Question Review", size=22, weight=ft.FontWeight.BOLD, color=PRIMARY),
                 table,
                 ft.Divider(height=30),
-                ft.Row([back_button], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Row([extract_button, back_button], alignment=ft.MainAxisAlignment.SPACE_EVENLY),
             ],
             spacing=25,
             alignment=ft.MainAxisAlignment.CENTER

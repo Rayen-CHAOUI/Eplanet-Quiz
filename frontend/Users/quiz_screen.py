@@ -1,6 +1,7 @@
 import flet as ft
 import sqlite3
 import os
+import asyncio
 
 
 def quiz_screen(page: ft.Page):
@@ -14,13 +15,35 @@ def quiz_screen(page: ft.Page):
     questions = cursor.fetchall()
     conn.close()
 
+    user = page.session.get("user")
     current_index = 0
     selected_answers = []
+    selected_option = None
 
-    # UI elements
-    progress = ft.Text("", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK87)
+    timer_text = ft.Text("20:00", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.RED_600)
+
+    async def start_timer():
+        seconds_left = 20 * 60
+        while seconds_left >= 0:
+            mins = seconds_left // 60
+            secs = seconds_left % 60
+            timer_text.value = f"{mins:02d}:{secs:02d}"
+            timer_text.update()
+            await asyncio.sleep(1)
+            seconds_left -= 1
+
+        for i in range(current_index, len(questions)):
+            selected_answers.append({
+                "question": questions[i][1],
+                "selected": None,
+                "correct": questions[i][8]
+            })
+        page.session.set("quiz_answers", selected_answers)
+        page.go("/result")
+
+    progress = ft.Text("", size=24, weight=ft.FontWeight.W_600, color=ft.Colors.BLACK87)
     question_text = ft.Text("", size=22, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER, color=ft.Colors.BLACK87)
-    image = ft.Image(src="", width=300, height=200, visible=False)
+    image = ft.Image(src="", width=320, height=200, visible=False)
     audio = ft.Audio(src="", autoplay=False)
     choices = []
 
@@ -35,7 +58,6 @@ def quiz_screen(page: ft.Page):
         )
     )
 
-    # Exit confirmation dialog
     def close_dialog(_=None):
         confirm_dialog.open = False
         page.update()
@@ -68,22 +90,10 @@ def quiz_screen(page: ft.Page):
         confirm_dialog.open = True
         page.update()
 
-    exit_btn = ft.OutlinedButton(
-        "Exit Exam",
-        width=150,
-        style=ft.ButtonStyle(
-            color=ft.Colors.TEAL_700,
-            shape=ft.RoundedRectangleBorder(radius=12),
-        ),
-        on_click=show_exit_dialog
-    )
-
-    selected_option = None
-
     for _ in range(4):
         btn = ft.ElevatedButton(
             text="",
-            width=320,
+            width=360,
             height=50,
             style=ft.ButtonStyle(
                 bgcolor=ft.Colors.TEAL_100,
@@ -112,8 +122,7 @@ def quiz_screen(page: ft.Page):
         progress.value = f"Question {index + 1} of {len(questions)}"
 
         image.visible = bool(image_file)
-        if image_file:
-            image.src = os.path.join(image_dir, image_file)
+        image.src = os.path.join(image_dir, image_file) if image_file else ""
 
         audio.visible = bool(audio_file)
         audio.src = os.path.join(audio_dir, audio_file) if audio_file else ""
@@ -154,40 +163,73 @@ def quiz_screen(page: ft.Page):
 
     next_btn.on_click = next_question
 
-    top_nav = ft.Container(
-        content=ft.Row(
-            controls=[progress, exit_btn],
+    sidebar = ft.Container(
+        width=300,
+        padding=20,
+        bgcolor=ft.Colors.BLUE_50,
+        content=ft.Column(
+            spacing=20,
+            expand=True,
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-        ),
-        padding=ft.padding.symmetric(horizontal=10, vertical=8),
-        bgcolor=ft.Colors.TEAL_50,
-        border_radius=ft.border_radius.all(8),
+            controls=[
+                ft.Column([
+                    ft.Text("Timer", size=22, weight=ft.FontWeight.W_600),
+                    timer_text,
+                    ft.Divider(),
+                    ft.Text(f"User: {user['full_name']}", size=18),
+                    ft.Text(f"Level: {user['level']}", size=18),
+                    ft.Divider(),
+                    progress,
+                ]),
+                ft.OutlinedButton(
+                    "Exit Exam",
+                    width=160,
+                    style=ft.ButtonStyle(
+                        color=ft.Colors.RED_400,
+                        shape=ft.RoundedRectangleBorder(radius=10)
+                    ),
+                    on_click=show_exit_dialog
+                )
+            ]
+        )
     )
 
-    quiz_card = ft.Container(
+    quiz_content = ft.Container(
         content=ft.Column(
             controls=[
-                top_nav,
                 question_text,
                 image,
                 audio,
-                ft.Column(choices, spacing=10),
+                ft.Column(choices, spacing=12),
                 ft.Row([next_btn], alignment=ft.MainAxisAlignment.CENTER),
             ],
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=20,
+            spacing=25,
         ),
-        width=600,
-        padding=20,
+        width=800,
+        padding=30,
         border_radius=20,
         bgcolor=ft.Colors.WHITE,
         shadow=ft.BoxShadow(
-            blur_radius=20,
+            blur_radius=25,
             color=ft.Colors.BLACK12,
-            offset=ft.Offset(0, 5),
+            offset=ft.Offset(0, 4),
             spread_radius=1
         ),
+    )
+
+    layout = ft.Row(
+        expand=True,
+        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+        controls=[
+            sidebar,
+            ft.Container(
+                expand=True,
+                alignment=ft.alignment.center,
+                content=quiz_content
+            )
+        ]
     )
 
     page.views.clear()
@@ -195,7 +237,7 @@ def quiz_screen(page: ft.Page):
         ft.View(
             route="/quiz",
             controls=[
-                ft.Container(content=quiz_card, alignment=ft.alignment.top_center, expand=True),
+                layout,
                 confirm_dialog
             ],
             scroll=ft.ScrollMode.AUTO,
@@ -204,4 +246,5 @@ def quiz_screen(page: ft.Page):
     )
 
     load_question(current_index)
+    page.run_task(start_timer)
     page.update()

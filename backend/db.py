@@ -1,3 +1,6 @@
+#backend/db.py
+
+
 import sqlite3
 from pathlib import Path
 from contextlib import contextmanager
@@ -6,7 +9,7 @@ DB_PATH = Path(__file__).parent / "eplanet_users.db"
 
 
 def _init_db() -> None:
-    """Create the users table if it does not exist."""
+    """Create the users and admins tables if they do not exist."""
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute(
             """
@@ -21,6 +24,19 @@ def _init_db() -> None:
             )
             """
         )
+
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS admins (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                full_name  TEXT    NOT NULL,
+                password   TEXT    NOT NULL,
+                level      TEXT    NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+            """
+        )
+
         conn.commit()
 
 

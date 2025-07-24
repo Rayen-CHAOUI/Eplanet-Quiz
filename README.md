@@ -1,6 +1,6 @@
-# Eplanet Quiz
+# ProLingo
 
-**Eplanet Quiz** is an English language quiz platform built with [Flet](https://flet.dev/) and `SQLite3`. Where users can register, log in, and take quizzes with multimedia questions **(text, image, and audio)**. Admins can manage users and questions via a Dashboard, Users also have access to various learning course pages such as **Grammar**, **Vocabulary**, **Speaking**, **Listening**, and **Exercises**.
+ An English language platform built with [Flet](https://flet.dev/) and `SQLite3`. Where users can register, log in, and take quizzes with multimedia questions **(text, image, and audio)**. Admins can manage users and questions via a Dashboard, Users also have access to various learning course pages such as **Grammar**, **Vocabulary**, **Speaking**, **Listening**, and **Exercises**.
 
 --- 
 
@@ -12,16 +12,18 @@
 - Grammar, Vocabulary, Speaking, Listening, and Exercise course pages.
 - Final result page showing detailed performance.
 - Admin dashboard to manage users and import questions.
+- Profile page to edit user's info.
 
 --- 
 
 ## Features
 
 ### User Features
-- Users stored in `backend/eplanet_users.db`.
+- Users stored in `backend/eplanet_users.db/user`.
 - User registration and login with **ID** and **password**.
 - Multiple levels **(Elementary, Pre-intermediate, Intermediate, Upper-intermediate, Advanced)**.
-- Access to course pages:
+- Change **password**, **level**, **username**.
+- Access to **course pages**:
     - Grammar.
     - Vocabulary.
     - Speaking.
@@ -34,24 +36,27 @@
     - Detailed table showing correct and incorrect answers.
 
 ### Admin Features
+- Admins stored in `backend/eplanet_users.db/admin`
 - Admin login via session.
 - View registered users with **performance stats**.
 - Add questions manually or import from **JSON/Excel**.
 - Upload question assets **(images/audio)**.
+- Edit user's info (**password**, **level**, **username**).
+- Add new users and admins.
 
 ---
 
 ### Quiz Logic
 - Questions stored in `backend/quiz_questions.db`.
 - Assets stored in `assets/images/` and `assets/audio/`.
-- Correct/wrong answers saved per user in `eplanet_users.db`.
+- Correct/wrong answers saved per user in `eplanet_users.db/user`.
 
 ---
 
 ### Lessons Logic
 - Lessons stored in `backend/lessons/grammar.db`,  `backend/lessons/vocabulary.db`.. etc
 - Assets stored in `assets/images/` and `assets/audio/`.
-- Correct/wrong answers for the exercises displayed in real-time.
+- Correct/wrong answers for the exercises displayed in **real-time**.
 
 ---
 
@@ -61,18 +66,19 @@
 - **Flet** : UI framework for building apps with Flutter-like widgets in Python.
 -  **SQLite3** : Lightweight embedded database. 
 - **JSON / Excel** : Question import support.
+- **Reportlab** : Extract result into **PDF file**.
 
 ---
 
-## Instalation 
+## Installation 
 
 1. Clone the repo : 
 
 ```bash
-   git clone https://github.com/Rayen-CHAOUI/eplanet-quiz.git
+   git clone https://github.com/Rayen-CHAOUI/ProLingo.git
 ```
 ```bash
-    cd eplanet-quiz
+    cd ProLingo
 ```
 
 2. install dependencies : 
@@ -80,7 +86,8 @@
 ```bash
     python3 -m venv .venv
     source .venv/bin/activate
-    pip install flet[all] 
+    pip3 install flet[all] 
+    pip3 install reportlab
 ```
 
 3. Run the app : 
@@ -95,8 +102,8 @@
 
 - Timer per question.
 - Question categories (Grammar, Listening, etc.). ---> **DONE**
-- User statistics and progress tracking.
-- Export results to PDF.
+- User statistics and progress tracking. ---> **DONE**
+- Export results to PDF. ---> **DONE**
 
 --- 
 

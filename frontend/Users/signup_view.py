@@ -3,7 +3,7 @@ from backend.auth import register_user
 
 def signup_view(page: ft.Page):
     error_text = ft.Text("", color=ft.Colors.RED_400, size=12)
-
+ 
     def do_signup(_):
         success, msg, _ = register_user(full_name.value, password.value, level.value)
 
@@ -16,7 +16,7 @@ def signup_view(page: ft.Page):
             page.go("/")
 
     def go_login(_):
-        page.go("/")
+        page.go("/login")
 
     # Light theme setup
     page.bgcolor = ft.Colors.WHITE
@@ -30,25 +30,32 @@ def signup_view(page: ft.Page):
                 ft.Container(
                     content=ft.Column(
                         [
-                            ft.Text("Eplanet Quiz", size=40, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
+                            ft.Image(
+                                src="assets/images/english_logo.png",
+                                width=180,
+                                height=180
+                            ),
+                            ft.Text("English Platform", size=40, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                             ft.Text("Create your account", size=18, color=ft.Colors.GREY_800),
                             full_name := ft.TextField(
                                 label="Full Name",
+                                border_radius=12,
                                 label_style=ft.TextStyle(color=ft.Colors.GREY_700),
                                 text_style=ft.TextStyle(color=ft.Colors.BLACK),
-                                border_color=ft.Colors.GREY_400,
-                                focused_border_color=ft.Colors.BLUE_400,
-                                bgcolor=ft.Colors.GREY_100
+                                bgcolor=ft.Colors.GREY_100,
+                                border_color=ft.Colors.BLUE_300,
+                                focused_border_color=ft.Colors.BLUE_700
                             ),
                             password := ft.TextField(
                                 label="Password",
+                                border_radius=12,
                                 label_style=ft.TextStyle(color=ft.Colors.GREY_700),
                                 text_style=ft.TextStyle(color=ft.Colors.BLACK),
-                                border_color=ft.Colors.GREY_400,
-                                focused_border_color=ft.Colors.BLUE_400,
+                                bgcolor=ft.Colors.GREY_100,
+                                border_color=ft.Colors.BLUE_300,
+                                focused_border_color=ft.Colors.BLUE_700,
                                 password=True,
                                 can_reveal_password=True,
-                                bgcolor=ft.Colors.GREY_100
                             ),
                             level := ft.Dropdown(
                                 label="Level",
@@ -67,7 +74,7 @@ def signup_view(page: ft.Page):
                             ),
                             error_text,
                             ft.ElevatedButton("Register", on_click=do_signup, width=200),
-                            ft.TextButton("Already have an account?  Login", on_click=go_login),
+                            ft.TextButton("Already have an account ?  Login", on_click=go_login),
                         ],
                         spacing=20,
                         alignment=ft.MainAxisAlignment.CENTER,
@@ -78,7 +85,8 @@ def signup_view(page: ft.Page):
                     expand=True,
                     padding=20
                 )
-            ]
+            ],
+            scroll=ft.ScrollMode.AUTO
         )
     )
     page.update()

@@ -133,7 +133,7 @@ def add_exercice_view(page: ft.Page):
                 ft.ElevatedButton(
                     "Back to Dashboard",
                     icon=ft.Icons.ARROW_BACK,
-                    on_click=lambda _: page.go("/dashboard"),
+                    on_click=lambda _: page.go("/admin_dashboard"),
                     bgcolor=ft.Colors.TEAL_100,
                     color=ft.Colors.TEAL_900
                 )
